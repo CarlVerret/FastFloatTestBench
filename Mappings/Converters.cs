@@ -7,10 +7,6 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 
-using TinyCsvParser;
-using TinyCsvParser.Mapping;
-using TinyCsvParser.TypeConverter;
-
 
 using FastFloatTestBench.Mappings;
 using FastFloatTestBench.Converters;
@@ -30,34 +26,34 @@ using System.Runtime.CompilerServices;
  namespace FastFloatTestBench.Converters
  {
 
-  public sealed class FFDoubleConverter : NonNullableConverter<double>
-    {
-      private readonly IFormatProvider formatProvider;
-      private readonly NumberStyles numberStyles;
+//   public sealed class FFDoubleConverter : NonNullableConverter<double>
+//     {
+//       private readonly IFormatProvider formatProvider;
+//       private readonly NumberStyles numberStyles;
 
-      public FFDoubleConverter()
-          : this(CultureInfo.InvariantCulture)
-      {
-      }
+//       public FFDoubleConverter()
+//           : this(CultureInfo.InvariantCulture)
+//       {
+//       }
 
-      public FFDoubleConverter(IFormatProvider formatProvider)
-          : this(formatProvider, NumberStyles.Float | NumberStyles.AllowThousands)
-      {
-      }
+//       public FFDoubleConverter(IFormatProvider formatProvider)
+//           : this(formatProvider, NumberStyles.Float | NumberStyles.AllowThousands)
+//       {
+//       }
 
-      public FFDoubleConverter(IFormatProvider formatProvider, NumberStyles numberStyles)
-      {
-        this.formatProvider = formatProvider;
-        this.numberStyles = numberStyles;
-      }
+//       public FFDoubleConverter(IFormatProvider formatProvider, NumberStyles numberStyles)
+//       {
+//         this.formatProvider = formatProvider;
+//         this.numberStyles = numberStyles;
+//       }
       
-      protected override bool InternalConvert(string value, out Double result)
-      {
-          result = csFastFloat.FastDoubleParser.ParseDouble(value);
-        return true;
+//       protected override bool InternalConvert(string value, out Double result)
+//       {
+//           result = csFastFloat.FastDoubleParser.ParseDouble(value);
+//         return true;
 
-      }
-    }
+//       }
+//     }
 
 
 

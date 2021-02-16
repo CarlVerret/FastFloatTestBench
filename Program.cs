@@ -7,9 +7,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 
-using TinyCsvParser;
-using TinyCsvParser.Mapping;
-using TinyCsvParser.TypeConverter;
+
 
 
 using FastFloatTestBench.Mappings;
@@ -63,79 +61,6 @@ namespace FastFloatTestBench
 		
 	   [ParamsSource(nameof(_filenames))]
         public string FileName { get; set; }
-
-
-
-		[Benchmark()]
-		public double Tiny_Regular(){
-
-			CsvParserOptions csvParserOptions = new CsvParserOptions(true, ',',1,true);
-            CsvCityMapping csvMapper = new CsvCityMapping();
-            CsvParser<WorldCity> csvParser = new CsvParser<WorldCity>(csvParserOptions, csvMapper);
-
-
- 			var result = csvParser
-                .ReadFromFile(FileName, Encoding.ASCII).AsEnumerable().Max(i => i.Result.Longitude);
-	 		//.ToList();
-
-				return result;
-
-
-		}
-
-	[Benchmark ()]
-		public double Tiny_Zeroes(){
-
-			CsvParserOptions csvParserOptions = new CsvParserOptions(true, ',', 1, true);
-            CustomZeroCsvCityMapping csvMapper = new CustomZeroCsvCityMapping();
-            CsvParser<WorldCity> csvParser = new CsvParser<WorldCity>(csvParserOptions, csvMapper);
-
-
-
- 			var result = csvParser
-                .ReadFromFile(FileName, Encoding.ASCII).AsEnumerable().Max(i => i.Result.Longitude);
-                //.ToList();
-
-					return result;
-
-		}
-
-	[Benchmark]
-		public double Tiny_CustomMap(){
-
-			CsvParserOptions csvParserOptions = new CsvParserOptions(true, ',', 1, true);
-            CustomCsvCityMapping csvMapper = new CustomCsvCityMapping();
-            CsvParser<WorldCity> csvParser = new CsvParser<WorldCity>(csvParserOptions, csvMapper);
-
-
-
- 			var result = csvParser
-                .ReadFromFile(FileName, Encoding.ASCII).AsEnumerable().Max(i => i.Result.Longitude);
-                //.ToList();
-
-					return result;
-
-		}
-
-
-
-
-	[Benchmark]
-		public double Tiny_FF(){
-
-			CsvParserOptions csvParserOptions = new CsvParserOptions(true, ',', 1, true);
-            CustomFFCsvCityMapping csvMapper = new CustomFFCsvCityMapping();
-            CsvParser<WorldCity> csvParser = new CsvParser<WorldCity>(csvParserOptions, csvMapper);
-
-
-
- 			var result = csvParser
-                .ReadFromFile(FileName, Encoding.ASCII).AsEnumerable().Max(i => i.Result.Longitude);
-                //.ToList();
-
-					return result;
-
-		}
 
 
 		[Benchmark ( Baseline=true)]

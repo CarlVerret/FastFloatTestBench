@@ -3,9 +3,6 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 
-using TinyCsvParser;
-using TinyCsvParser.Mapping;
-using TinyCsvParser.TypeConverter;
 
 
 using FastFloatTestBench.Mappings;
@@ -22,19 +19,19 @@ using System.Text;
  namespace FastFloatTestBench.Mappings
 {
 
-	internal class simpleCsvCityMapping : CsvMapping<WorldCity>
-{
-    public simpleCsvCityMapping()
-        : base()
-    {
-       // MapProperty(0, x => x.City);
-        MapProperty(5, x => x.Latitude, new FFDoubleConverter());
-        MapProperty(6, x => x.Longitude, new FFDoubleConverter());
-    }
+// 	internal class simpleCsvCityMapping : CsvMapping<WorldCity>
+// {
+//     public simpleCsvCityMapping()
+//         : base()
+//     {
+//        // MapProperty(0, x => x.City);
+//         MapProperty(5, x => x.Latitude, new FFDoubleConverter());
+//         MapProperty(6, x => x.Longitude, new FFDoubleConverter());
+//     }
 
 
 
-}
+// }
 
 internal class WorldCity
 		{
@@ -56,69 +53,56 @@ internal class WorldCity
 		}
 
 
-internal class CsvCityMapping : CsvMapping<WorldCity>
-{
-    public CsvCityMapping()
-        : base()
-    {
-       // MapProperty(0, x => x.City);
-        MapProperty(5, x => x.Latitude, new TinyCsvParser.TypeConverter.DoubleConverter());
-        MapProperty(6, x => x.Longitude, new TinyCsvParser.TypeConverter.DoubleConverter());
-    }
 
+// internal sealed class CustomCsvCityMapping : CsvMapping<WorldCity>
+// {
+//     public CustomCsvCityMapping()
+//         : base()
+//     {
 
-
-}
-
-internal sealed class CustomCsvCityMapping : CsvMapping<WorldCity>
-{
-    public CustomCsvCityMapping()
-        : base()
-    {
-
-       MapUsing((entity,values)=> {
-					entity.Latitude = Double.Parse(values.Tokens[5]);
-					entity.Longitude = Double.Parse(values.Tokens[6]);
-					return true;
-		       });
-    }
+//        MapUsing((entity,values)=> {
+// 					entity.Latitude = Double.Parse(values.Tokens[5]);
+// 					entity.Longitude = Double.Parse(values.Tokens[6]);
+// 					return true;
+// 		       });
+//     }
 
 
 	
-}
-	internal sealed class CustomFFCsvCityMapping : CsvMapping<WorldCity>
-{
-    public CustomFFCsvCityMapping()
-        : base()
-    {
+// }
+// 	internal sealed class CustomFFCsvCityMapping : CsvMapping<WorldCity>
+// {
+//     public CustomFFCsvCityMapping()
+//         : base()
+//     {
 
-       MapUsing((entity,values)=> {
-					entity.Latitude =  csFastFloat.FastDoubleParser.ParseDouble(values.Tokens[5]);
-					entity.Longitude = csFastFloat.FastDoubleParser.ParseDouble(values.Tokens[6]);
-					return true;
-		       });
-    }
-
-
-	
-}
-
-	internal sealed class CustomZeroCsvCityMapping : CsvMapping<WorldCity>
-{
-    public CustomZeroCsvCityMapping()
-        : base()
-    {
-
-       MapUsing((entity,values)=> {
-					entity.Latitude =  0;
-					entity.Longitude = 0;
-					return true;
-		       });
-    }
+//        MapUsing((entity,values)=> {
+// 					entity.Latitude =  csFastFloat.FastDoubleParser.ParseDouble(values.Tokens[5]);
+// 					entity.Longitude = csFastFloat.FastDoubleParser.ParseDouble(values.Tokens[6]);
+// 					return true;
+// 		       });
+//     }
 
 
 	
-}
+// }
+
+// 	internal sealed class CustomZeroCsvCityMapping : CsvMapping<WorldCity>
+// {
+//     public CustomZeroCsvCityMapping()
+//         : base()
+//     {
+
+//        MapUsing((entity,values)=> {
+// 					entity.Latitude =  0;
+// 					entity.Longitude = 0;
+// 					return true;
+// 		       });
+//     }
+
+
+	
+// }
 
 
 

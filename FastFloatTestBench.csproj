@@ -15,10 +15,7 @@
       <HintPath>csFastFloat.dll</HintPath>
     </Reference>
 
-<Reference Include="TinyCsvParser">
-     <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <HintPath>TinyCsvParser.dll</HintPath>
-    </Reference>
+
 
     <Reference Include="CsvHelper">
      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
