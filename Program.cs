@@ -12,6 +12,10 @@ using TinyCsvParser.Mapping;
 using TinyCsvParser.TypeConverter;
 
 
+using FastFloatTestBench.Mappings;
+using FastFloatTestBench.Converters;
+
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -20,6 +24,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
+using System.Runtime.CompilerServices;
 
 namespace FastFloatTestBench
 {
@@ -52,10 +57,91 @@ namespace FastFloatTestBench
 	
 		}
 
-		[Benchmark ()]
-		public   int ParseRegularCsvH()
+		public List<string> _filenames => new List<string> {  @"w-c-100K.csv", @"w-c-300K.csv"  };
+
+	
+		
+	   [ParamsSource(nameof(_filenames))]
+        public string FileName { get; set; }
+
+
+
+		[Benchmark()]
+		public double Tiny_Regular(){
+
+			CsvParserOptions csvParserOptions = new CsvParserOptions(true, ',',1,true);
+            CsvCityMapping csvMapper = new CsvCityMapping();
+            CsvParser<WorldCity> csvParser = new CsvParser<WorldCity>(csvParserOptions, csvMapper);
+
+
+ 			var result = csvParser
+                .ReadFromFile(FileName, Encoding.ASCII).AsEnumerable().Max(i => i.Result.Longitude);
+	 		//.ToList();
+
+				return result;
+
+
+		}
+
+	[Benchmark ()]
+		public double Tiny_Zeroes(){
+
+			CsvParserOptions csvParserOptions = new CsvParserOptions(true, ',', 1, true);
+            CustomZeroCsvCityMapping csvMapper = new CustomZeroCsvCityMapping();
+            CsvParser<WorldCity> csvParser = new CsvParser<WorldCity>(csvParserOptions, csvMapper);
+
+
+
+ 			var result = csvParser
+                .ReadFromFile(FileName, Encoding.ASCII).AsEnumerable().Max(i => i.Result.Longitude);
+                //.ToList();
+
+					return result;
+
+		}
+
+	[Benchmark]
+		public double Tiny_CustomMap(){
+
+			CsvParserOptions csvParserOptions = new CsvParserOptions(true, ',', 1, true);
+            CustomCsvCityMapping csvMapper = new CustomCsvCityMapping();
+            CsvParser<WorldCity> csvParser = new CsvParser<WorldCity>(csvParserOptions, csvMapper);
+
+
+
+ 			var result = csvParser
+                .ReadFromFile(FileName, Encoding.ASCII).AsEnumerable().Max(i => i.Result.Longitude);
+                //.ToList();
+
+					return result;
+
+		}
+
+
+
+
+	[Benchmark]
+		public double Tiny_FF(){
+
+			CsvParserOptions csvParserOptions = new CsvParserOptions(true, ',', 1, true);
+            CustomFFCsvCityMapping csvMapper = new CustomFFCsvCityMapping();
+            CsvParser<WorldCity> csvParser = new CsvParser<WorldCity>(csvParserOptions, csvMapper);
+
+
+
+ 			var result = csvParser
+                .ReadFromFile(FileName, Encoding.ASCII).AsEnumerable().Max(i => i.Result.Longitude);
+                //.ToList();
+
+					return result;
+
+		}
+
+
+		[Benchmark ( Baseline=true)]
+		public   int CsvH_Regular()
 		{
-			using (var reader = new StreamReader(@"worldcitiespop-100K.csv"))
+			using (var reader = new StreamReader(FileName))
 			using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
 			{
 				var records = new List<WorldCity>();
@@ -77,86 +163,43 @@ namespace FastFloatTestBench
 			}
 		}
 
-		private class CsvCityMapping : CsvMapping<WorldCity>
-{
-    public CsvCityMapping()
-        : base()
-    {
-       // MapProperty(0, x => x.City);
-        MapProperty(1, x => x.Latitude);
-        MapProperty(2, x => x.Longitude);
-    }
+	[Benchmark]
+		public  int CsvH_Zeroes()
+		{
 
 
+			var parser = new ZeroDoubleConverter();
 
-}
-	private class CustomCsvCityMapping : CsvMapping<WorldCity>
-{
-    public CustomCsvCityMapping()
-        : base()
-    {
+			using (var reader = new StreamReader(FileName))
+			using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+			{
+				var records = new List<WorldCity>();
+				csv.Read();
+				csv.ReadHeader();
+				while (csv.Read())
+				{
+					var record = new WorldCity
+					{
+					//	City = csv.GetField<string>("City"),
+						Latitude =  csv.GetField<double>("Latitude", parser),
+						Longitude = csv.GetField<double>("Longitude", parser)
+					};
+					records.Add(record);
+				}
 
-		var myConverter = new 	FFDoubleConverter();
+				return records.Count;
 
-      //  MapProperty(0, x => x.City);
-        MapProperty(1, x => x.Latitude, myConverter );
-        MapProperty(2, x => x.Longitude, myConverter);
-    }
-
-
-	
-}
-
-
-
-		[Benchmark(Baseline =true)]
-		public int ParseRegularTiny(){
-
-			CsvParserOptions csvParserOptions = new CsvParserOptions(true, ';');
-            CsvCityMapping csvMapper = new CsvCityMapping();
-            CsvParser<WorldCity> csvParser = new CsvParser<WorldCity>(csvParserOptions, csvMapper);
-
-
-
- 			var result = csvParser
-                .ReadFromFile(@"worldcitiespop-100K.csv", Encoding.ASCII)
-                .ToList();
-
-				return result.Count();
-
+			}
 		}
 
-	//	[Benchmark]
-		public int ParseOverrideTiny(){
-
-			CsvParserOptions csvParserOptions = new CsvParserOptions(true, ';');
-            CustomCsvCityMapping csvMapper = new CustomCsvCityMapping();
-            CsvParser<WorldCity> csvParser = new CsvParser<WorldCity>(csvParserOptions, csvMapper);
-
-
-
- 			var result = csvParser
-                .ReadFromFile(@"worldcitiespop-100K.csv", Encoding.ASCII)
-                .ToList();
-
-				return result.Count();
-
-		}
-
-
-
-
-
-
-
-		//[Benchmark]
-		public  int ParseOverrideCsvH()
+		[Benchmark]
+		public  int CsvH_FF()
 		{
 
 
 			var parser = new csFFDoubleConverter();
 
-			using (var reader = new StreamReader(@"worldcitiespop-100K.csv"))
+			using (var reader = new StreamReader(FileName))
 			using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
 			{
 				var records = new List<WorldCity>();
@@ -180,88 +223,9 @@ namespace FastFloatTestBench
 
 
 
-	  public class FFDoubleConverter : NonNullableConverter<Double>
-    {
-      private readonly IFormatProvider formatProvider;
-      private readonly NumberStyles numberStyles;
-
-      public FFDoubleConverter()
-          : this(CultureInfo.InvariantCulture)
-      {
-      }
-
-      public FFDoubleConverter(IFormatProvider formatProvider)
-          : this(formatProvider, NumberStyles.Float | NumberStyles.AllowThousands)
-      {
-      }
-
-      public FFDoubleConverter(IFormatProvider formatProvider, NumberStyles numberStyles)
-      {
-        this.formatProvider = formatProvider;
-        this.numberStyles = numberStyles;
-      }
-
-      protected override bool InternalConvert(string value, out Double result)
-      {
-          result = csFastFloat.FastDoubleParser.ParseDouble(value);
-        return true;
-
-      }
-    }
+	
 
 
-
-		public  class csFFDoubleConverter : DefaultTypeConverter
-		{
-			private Lazy<string> defaultFormat = new Lazy<string>(() => double.TryParse(double.MaxValue.ToString("R"), out var _) ? "R" : "G17");
-
-			/// <summary>
-			/// Converts the object to a string.
-			/// </summary>
-			/// <param name="value">The object to convert to a string.</param>
-			/// <param name="row">The <see cref="IWriterRow"/> for the current record.</param>
-			/// <param name="memberMapData">The <see cref="MemberMapData"/> for the member being written.</param>
-			/// <returns>The string representation of the object.</returns>
-			public override string ConvertToString(object value, IWriterRow row, MemberMapData memberMapData)
-			{
-				var format = memberMapData.TypeConverterOptions.Formats?.FirstOrDefault() ?? defaultFormat.Value;
-
-				if (value is double d)
-				{
-					return d.ToString(format, memberMapData.TypeConverterOptions.CultureInfo);
-				}
-
-				return base.ConvertToString(value, row, memberMapData);
-			}
-
-			/// <summary>
-			/// Converts the string to an object.
-			/// </summary>
-			/// <param name="text">The string to convert to an object.</param>
-			/// <param name="row">The <see cref="IReaderRow"/> for the current record.</param>
-			/// <param name="memberMapData">The <see cref="MemberMapData"/> for the member being created.</param>
-			/// <returns>The object created from the string.</returns>
-			public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
-			=> csFastFloat.FastDoubleParser.ParseDouble(text);
-		}
-
-
-		public class WorldCity
-		{
-
-
-//			Country,City,AccentCity,Region,Population,Latitude,Longitude
-//ad, aixas, Aixàs,06,,42.4833333,1.4666667
-			public string Country { get; set; }
-			public string City { get; set; }
-			public string AccentCity { get; set; }
-			public string Region { get; set; }
-			public string Population { get; set; }
-			public double Latitude { get; set; }
-			public double Longitude { get; set; }
-
-
-
-		}
+		
 	}
 }

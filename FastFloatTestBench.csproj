@@ -26,12 +26,25 @@
     </Reference>
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="worldcitiespop-100K.csv">
+  <ItemGroup>  
+    <None Update="w-c-300K.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+
+  </ItemGroup>
+
+<ItemGroup>
+    <None Update="w-c-100K.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+
   </ItemGroup>
  <ItemGroup>
     <Folder Include="refs\" />
+    
+  </ItemGroup> 
+  <ItemGroup>
+    <Folder Include="Mappings" />
+    
   </ItemGroup>
 </Project>
