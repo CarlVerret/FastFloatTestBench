@@ -23,19 +23,6 @@
     </Reference>
   </ItemGroup>
 
-  <ItemGroup>  
-    <None Update="w-c-300K.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-
-  </ItemGroup>
-
-<ItemGroup>
-    <None Update="w-c-100K.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-
-  </ItemGroup>
  <ItemGroup>
     <Folder Include="refs\" />
     
@@ -44,4 +31,11 @@
     <Folder Include="Mappings" />
     
   </ItemGroup>
+<ItemGroup>
+    <None Update="TestData\**\*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+</ItemGroup>
+
+
 </Project>

@@ -14,6 +14,8 @@ using FastFloatTestBench.Mappings;
 using FastFloatTestBench.Converters;
 
 
+using BenchmarkDotNet.Reports;
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -26,8 +28,11 @@ using System.Runtime.CompilerServices;
 
 namespace FastFloatTestBench
 {
+	
+
+
 	[SimpleJob(RuntimeMoniker.NetCoreApp50)]
-//	[SimpleJob( warmupCount: 100, targetCount: 100)]
+	//[SimpleJob( warmupCount: 1, targetCount: 1)]
 	[Config(typeof(Config))]
 	public class Program
   {
@@ -35,11 +40,14 @@ namespace FastFloatTestBench
 		{
 			public Config()
 			{
-
-			
-
 				AddColumn(
 						StatisticColumn.Min);
+
+				AddColumn(new SizeOfFileColumn());
+
+				
+
+				
 				// Todo : add MB/s + MFloat/s stats columns
 			}
 		}
@@ -47,26 +55,16 @@ namespace FastFloatTestBench
 
 		static void Main(string[] args)
 		{
-
-
-
-			var summary = BenchmarkRunner.Run<Program>();
-
-	
+			var config = DefaultConfig.Instance.With(SummaryStyle.Default.WithMaxParameterColumnWidth(100));
+			var summary = BenchmarkRunner.Run<Program>(config);
 		}
-
-		public List<string> _filenames => new List<string> {  @"w-c-100K.csv", @"w-c-300K.csv"  };
-
-	
-		
-	   [ParamsSource(nameof(_filenames))]
-        public string FileName { get; set; }
 
 
 		[Benchmark ( Baseline=true)]
-		public   int CsvH_Regular()
+	[ArgumentsSource(nameof(MultiColFiles))]
+		public   int CsvH_Regular(string fileName)
 		{
-			using (var reader = new StreamReader(FileName))
+			using (var reader = new StreamReader(fileName))
 			using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
 			{
 				var records = new List<WorldCity>();
@@ -88,14 +86,14 @@ namespace FastFloatTestBench
 			}
 		}
 
-	[Benchmark]
-		public  int CsvH_Zeroes()
+		[Benchmark ()]
+	[ArgumentsSource(nameof(MultiColFiles))]
+		public  int CsvH_Zeroes(string fileName)
 		{
-
 
 			var parser = new ZeroDoubleConverter();
 
-			using (var reader = new StreamReader(FileName))
+			using (var reader = new StreamReader(fileName))
 			using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
 			{
 				var records = new List<WorldCity>();
@@ -117,14 +115,15 @@ namespace FastFloatTestBench
 			}
 		}
 
-		[Benchmark]
-		public  int CsvH_FF()
+		[Benchmark ()]
+	 [ArgumentsSource(nameof(MultiColFiles))]
+		public  int CsvH_FF(string fileName)
 		{
 
 
 			var parser = new csFFDoubleConverter();
 
-			using (var reader = new StreamReader(FileName))
+			using (var reader = new StreamReader(fileName))
 			using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
 			{
 				var records = new List<WorldCity>();
@@ -148,7 +147,82 @@ namespace FastFloatTestBench
 
 
 
-	
+	[Benchmark ( Baseline=true)]
+		 [ArgumentsSource(nameof(SingleColFiles))]
+		public   int SingleCol_Regular(string fileName)
+		{
+			using (var reader = new StreamReader(fileName))
+			using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+			{
+				var records = new List<double>();
+				csv.Read();
+				csv.ReadHeader();
+				while (csv.Read())
+				{
+					records.Add(csv.GetField<double>(0));
+				}
+
+				return records.Count;
+
+			}
+		}
+
+		[Benchmark ()]
+		 [ArgumentsSource(nameof(SingleColFiles))]
+		public  int SingleCol_Zeroes(string fileName)
+		{
+
+			var parser = new ZeroDoubleConverter();
+
+			using (var reader = new StreamReader(fileName))
+			using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+			{
+				var records = new List<double>();
+				csv.Read();
+				csv.ReadHeader();
+				while (csv.Read())
+				{
+					records.Add(csv.GetField<double>(0, parser));
+				}
+
+				return records.Count;
+			}
+		}
+
+ 		public IEnumerable<string> MultiColFiles() // for single argument it's an IEnumerable of objects (object)
+        {
+            yield return	@"TestData/w-c-100K.csv" ;
+            yield return    @"TestData/w-c-300K.csv";
+        }
+  		 public IEnumerable<string> SingleColFiles() // for single argument it's an IEnumerable of objects (object)
+        {
+            yield return	@"TestData/canada.txt" ;
+            yield return    @"TestData/synthetic.csv";
+        }
+
+		[Benchmark ()]
+		 [ArgumentsSource(nameof(SingleColFiles))]
+		public  int SingleCol_FF(string fileName)
+		{
+
+			var parser = new csFFDoubleConverter();
+
+			using (var reader = new StreamReader(fileName))
+			using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+			{
+				var records = new List<double>();
+					csv.Read();
+				csv.ReadHeader();
+				while (csv.Read())
+				{
+					records.Add(csv.GetField<double>(0,parser));
+				}
+				
+				return records.Count;
+
+			}
+		}
+
 
 
 		
