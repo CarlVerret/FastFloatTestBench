@@ -24,13 +24,13 @@ using System.Runtime.CompilerServices;
 namespace FastFloatTestBench
 {
 
-    public class SizeOfFileColumn : IColumn
+    public class MFloatPerSecColumn : IColumn
     {
-        public string Id => nameof(SizeOfFileColumn);
+        public string Id => nameof(MFloatPerSecColumn);
 
-        public string ColumnName => "SizeOfFile(MB)";
+        public string ColumnName => "MFloat/s";
 
-        public string Legend => "Size of file being parsed";
+        public string Legend => "Number of MFloat per second";
 
         public UnitType UnitType => UnitType.Size;
 
@@ -38,7 +38,7 @@ namespace FastFloatTestBench
 
         public ColumnCategory Category => ColumnCategory.Metric;
 
-        public int PriorityInCategory => 0;
+        public int PriorityInCategory => 1;
 
         public bool IsNumeric => true;
 
@@ -50,17 +50,14 @@ namespace FastFloatTestBench
 
         public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style)
         {
-            var benchmarkName = benchmarkCase.Descriptor.WorkloadMethod.Name.ToLower();
-            var myFileName =  benchmarkCase.Parameters.Items.FirstOrDefault(x => x.Name == "fileName").ToString();
-            if (myFileName == null)
-            {
-                return "no parameter";
-            }
-			Console.WriteLine($"here !! name : {myFileName}");
+		    var disp_info = benchmarkCase.DisplayInfo;
+			var nbFloat = int.Parse(benchmarkCase.Parameters.Items.FirstOrDefault(x => x.Name == "nbFloat").ToString());
+			var s= summary.Reports.Where(x => x.BenchmarkCase.DisplayInfo == disp_info).FirstOrDefault();
+			double fps = nbFloat * 1000 / s.ResultStatistics.Min;
 
-            // var N = Convert.ToInt32(parameter.Value);
-            // var filename = $"disk-size.{benchmarkName}.{N}.txt";
-            return File.Exists(myFileName) ? (File.ReadAllText(myFileName).Length/1024).ToString() : "no file";
+			return string.Format("{0,8:f2}",fps);
+
+
         }
 
         public override string ToString() => ColumnName;
