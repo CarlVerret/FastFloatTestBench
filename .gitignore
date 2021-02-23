@@ -30,3 +30,5 @@
 /obj
 /bin
 /BenchmarkDotNet.Artifacts
+
+Core*.

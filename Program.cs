@@ -53,7 +53,7 @@ namespace FastFloatTestBench
 		}
 
 
-		[Benchmark ( Baseline=true)]
+		[Benchmark ( Baseline=true, Description="Double.Parse() - multicol")]
 	[ArgumentsSource(nameof(MultiColFiles))]
 		public   int CsvH_Regular(string fileName,  int fileSize, int nbFloat)
 		{
@@ -79,7 +79,7 @@ namespace FastFloatTestBench
 			}
 		}
 
-		[Benchmark ()]
+		[Benchmark (  Description="Zeroes() - multicol")]
 	[ArgumentsSource(nameof(MultiColFiles))]
 		public  int CsvH_Zeroes(string fileName,  int fileSize, int nbFloat)
 		{
@@ -108,7 +108,7 @@ namespace FastFloatTestBench
 			}
 		}
 
-		[Benchmark ()]
+		[Benchmark (  Description="FastFloat.Parse() - multicol")]
 	 [ArgumentsSource(nameof(MultiColFiles))]
 		public  int CsvH_FF(string fileName,  int fileSize, int nbFloat)
 		{
@@ -140,21 +140,20 @@ namespace FastFloatTestBench
 
 	internal object[] TestFileSpecs(string fileName, int floatPerLine)
 	{
-		int volume =0;
+		var volume = new FileInfo(fileName).Length/1024;
 		 int nbFloat =0;
 
+
 		var lines =	 System.IO.File.ReadAllLines(fileName);
-		 foreach (string l in lines)
-			{
-				volume += l.Length;
-			}
+	
+
 		nbFloat = lines.Count() * floatPerLine;
 
-		return new object[] { fileName, volume/1024,nbFloat  };
+		return new object[] { fileName, volume,nbFloat  };
 	}
 
 
-	[Benchmark ( Baseline=true)]
+	[Benchmark ( Baseline=true,Description="Double.Parse() - singlecol")]
 		 [ArgumentsSource(nameof(SingleColFiles))]
 		public   int SingleCol_Regular(string fileName,  int fileSize, int nbFloat)
 		{
@@ -176,7 +175,7 @@ namespace FastFloatTestBench
 			}
 		}
 
-		[Benchmark ()]
+		[Benchmark ( Description="Zeroes - singlecol")]
 		 [ArgumentsSource(nameof(SingleColFiles))]
 		public  int SingleCol_Zeroes(string fileName,  int fileSize, int nbFloat )
 		{
@@ -200,7 +199,7 @@ namespace FastFloatTestBench
 
 
 
-		[Benchmark ()]
+		[Benchmark ( Description="FastFloat.ParseDouble() - singlecol")]
 		 [ArgumentsSource(nameof(SingleColFiles))]
 		public  int SingleCol_FF(string fileName,  int fileSize, int nbFloat)
 		{
