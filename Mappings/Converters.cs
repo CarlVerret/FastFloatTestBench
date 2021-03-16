@@ -90,6 +90,7 @@ using System.Runtime.CompilerServices;
 			public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
 			=> csFastFloat.FastDoubleParser.ParseDouble(text);
 		}
+		
 		public  class ZeroDoubleConverter : DefaultTypeConverter
 		{
 			private Lazy<string> defaultFormat = new Lazy<string>(() => double.TryParse(double.MaxValue.ToString("R"), out var _) ? "R" : "G17");
