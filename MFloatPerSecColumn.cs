@@ -48,14 +48,22 @@ namespace FastFloatTestBench
 
         public string GetValue(Summary summary, BenchmarkCase benchmarkCase) => GetValue(summary, benchmarkCase, SummaryStyle.Default);
 
-        public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style)
-        {
-		    var disp_info = benchmarkCase.DisplayInfo;
-			var nbFloat = int.Parse(benchmarkCase.Parameters.Items.FirstOrDefault(x => x.Name == "nbFloat").ToString());
-			var s= summary.Reports.Where(x => x.BenchmarkCase.DisplayInfo == disp_info).FirstOrDefault();
-			double fps = nbFloat * 1000 / s.ResultStatistics.Min;
+    public string GetValue(Summary summary, BenchmarkCase benchmarkCase, SummaryStyle style)
+    {
+      var disp_info = benchmarkCase.DisplayInfo;
+      var nbFloat = (int)benchmarkCase.Parameters.Items[2].Value;
 
-			return string.Format("{0,8:f2}",fps);
+      var qry = summary.Reports.Where(x => x.BenchmarkCase.DisplayInfo == disp_info);
+      if (qry.Any())
+      {
+        var s = qry.FirstOrDefault();
+        if (s.ResultStatistics != null)
+        { 
+          double fps = nbFloat * 1000 / s.ResultStatistics.Min;
+          return string.Format("{0,8:f2}",fps);
+        }
+      }
+      return "n/a";
 
 
         }

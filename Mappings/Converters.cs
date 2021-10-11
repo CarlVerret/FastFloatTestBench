@@ -80,15 +80,21 @@ using System.Runtime.CompilerServices;
 				return base.ConvertToString(value, row, memberMapData);
 			}
 
-			/// <summary>
-			/// Converts the string to an object.
-			/// </summary>
-			/// <param name="text">The string to convert to an object.</param>
-			/// <param name="row">The <see cref="IReaderRow"/> for the current record.</param>
-			/// <param name="memberMapData">The <see cref="MemberMapData"/> for the member being created.</param>
-			/// <returns>The object created from the string.</returns>
-			public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
-			=> csFastFloat.FastDoubleParser.ParseDouble(text);
+		/// <summary>
+		/// Converts the string to an object.
+		/// </summary>
+		/// <param name="text">The string to convert to an object.</param>
+		/// <param name="row">The <see cref="IReaderRow"/> for the current record.</param>
+		/// <param name="memberMapData">The <see cref="MemberMapData"/> for the member being created.</param>
+		/// <returns>The object created from the string.</returns>
+		public override object ConvertFromString(string text, IReaderRow row, MemberMapData memberMapData)
+		{ 
+			if(csFastFloat.FastDoubleParser.TryParseDouble(text, out double d))
+      {
+			return d;
+      }
+			throw new Exception($"cannot read double {text}");
+		}
 		}
 		
 		public  class ZeroDoubleConverter : DefaultTypeConverter

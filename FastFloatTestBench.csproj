@@ -6,9 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.12.1" />
-    <PackageReference Include="csFastFloat" Version="3.0.0" />
-    <PackageReference Include="CSVHelper" Version="26.0.1" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
+    <PackageReference Include="CSVHelper" Version="27.1.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,6 +36,11 @@
     <None Update="TestData\**\*.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+</ItemGroup>
+<ItemGroup>
+  <None Update="refs\csFastFloat.dll">
+    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+  </None>
 </ItemGroup>
 
 
